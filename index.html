@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+<meta charset="UTF-8">
+<title>Viršelių kūrėjas</title>
+<link href="https://fonts.googleapis.com/css2?family=Impact&family=Arial+Black&family=Bebas+Neue&family=Oswald&family=Anton&family=Bangers&family=Creepster&family=Nosifer&family=Special+Elite&family=Permanent+Marker&family=Exo+2:wght@400;500;600;700&family=Cuprum:wght@400;500;600&family=PT+Sans+Caption&family=Ruslan+Display&family=Cormorant+Garamond:wght@500;600;700&subset=cyrillic,latin&display=swap" rel="stylesheet">
+<style>
+  body { margin:0; height:100vh; display:flex; font-family:Arial,sans-serif; overflow:hidden; }
+  #pagrindinis { flex:1; background:#000; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  #canvas { position:relative; width:1280px; height:720px; background:#000; border:1px solid #444; overflow:hidden; }
+  
+  #menu { 
+    width: 380px; min-width: 380px; 
+    background:#111; color:#eee; 
+    padding:16px; overflow-y:auto; overflow-x:hidden; box-sizing:border-box; 
+  }
+  
+  .tekstas, .linija, .teksto-fonas {
+    position:absolute; box-sizing:border-box;
+  }
+  .tekstas {
+    cursor:move; white-space:pre; font-weight:bold; padding:6px 10px; min-width:60px; z-index:30;
+  }
+  .teksto-fonas {
+    border-radius:6px; z-index:25;
+  }
+  .linija {
+    border-radius:4px; cursor:move; z-index:20;
+  }
+  label { display:block; margin:8px 0 4px; font-size:0.92em; color:#ccc; }
+  input[type=text], select, input[type=color] { width:100%; padding:7px; background:#222; color:#eee; border:1px solid #444; }
+  input[type=range] { width:100%; accent-color:#e74c3c; }
+  button { margin-top:20px; padding:12px; background:#e74c3c; color:white; border:none; width:100%; font-size:1.1em; cursor:pointer; }
+  h3, h4 { color:#e74c3c; margin:12px 0 8px; }
+  hr { border-color:#333; margin:12px 0; }
+</style>
+</head>
+<body>
+
+<div id="pagrindinis">
+  <div id="canvas"></div>
+</div>
+
+<div id="menu">
+  <h3>Fonas</h3>
+  <input type="file" id="fonas" accept="image/*">
+  <hr>
+
+  <!-- 1 tekstas -->
+  <div>
+    <h4><label><input type="checkbox" id="show1" checked> 1 tekstas</label></h4>
+    <input type="text" id="t1" value="PIRMA EILUTĖ" placeholder="Įveskite tekstą...">
+    <label>Spalva</label><input type="color" id="c1" value="#000000">
+    <label>Permatamumas (%)</label><input type="range" id="txtalpha1" min="0" max="100" value="100">
+    <label>Šriftas</label>
+    <select id="f1">
+      <option value="Impact">Impact</option>
+      <option value="Arial Black">Arial Black</option>
+      <option value="Bebas Neue">Bebas Neue</option>
+      <option value="Oswald">Oswald</option>
+      <option value="Anton">Anton</option>
+      <option value="Bangers">Bangers</option>
+      <option value="Creepster">Creepster</option>
+      <option value="Nosifer">Nosifer</option>
+      <option value="Special Elite">Special Elite</option>
+      <option value="Permanent Marker">Permanent Marker</option>
+      <option value="Exo 2">Exo 2</option>
+      <option value="Cuprum">Cuprum</option>
+      <option value="PT Sans Caption">PT Sans Caption</option>
+      <option value="Ruslan Display">Ruslan Display</option>
+      <option value="Cormorant Garamond">Cormorant Garamond</option>
+    </select>
+    <label>Dydis (px)</label><input type="range" id="d1" min="40" max="180" value="80">
+    <label><input type="checkbox" id="apv1" checked> Apvadas</label>
+    <label>Apvado spalva</label><input type="color" id="apvc1" value="#ffffff">
+    <label>Apvado storis</label><input type="range" id="apvw1" min="0" max="12" step="0.5" value="4">
+    <label><input type="checkbox" id="sh1" checked> Šešėlis</label>
+    <label>Šešėlio spalva</label><input type="color" id="shc1" value="#800000">
+    <label>Šešėlio blur (px)</label><input type="range" id="shblur1" min="0" max="30" value="8">
+    <label>Šešėlio poslinkis (px)</label><input type="range" id="shoff1" min="-30" max="30" value="4">
+
+    <hr>
+
+    <label><input type="checkbox" id="autobg1" checked> Automatinis fonas po tekstu</label>
+    <label>Fono spalva</label><input type="color" id="autobgcol1" value="#1a1a1a">
+    <label>Fono permatamumas (%)</label><input type="range" id="bgop1" min="0" max="100" value="100">
+    <label>Fono išsikišimas (px)</label><input type="range" id="bgpad1" min="0" max="60" value="12">
+    <label>Fono užapvalinimas (px)</label><input type="range" id="bgrad1" min="0" max="50" value="6">
+
+    <hr>
+
+    <label><input type="checkbox" id="lin1_on" checked> Linija</label>
+    <label>Linijos spalva</label><input type="color" id="lin1_c" value="#ff4444">
+    <label>Linijos ilgis (%)</label><input type="range" id="lin1_w" min="20" max="120" value="90">
+    <label>Linijos storis (px)</label><input type="range" id="lin1_h" min="5" max="150" value="20">
+  </div>
+
+  <hr>
+
+  <!-- 2 tekstas -->
+  <div>
+    <h4><label><input type="checkbox" id="show2" checked> 2 tekstas</label></h4>
+    <input type="text" id="t2" value="ANTRA EILUTĖ" placeholder="ANTRA EILUTĖ">
+    <label>Spalva</label><input type="color" id="c2" value="#1103D3">
+    <label>Permatamumas (%)</label><input type="range" id="txtalpha2" min="0" max="100" value="100">
+    <label>Šriftas</label>
+    <select id="f2">
+      <option value="Impact">Impact</option>
+      <option value="Arial Black">Arial Black</option>
+      <option value="Bebas Neue">Bebas Neue</option>
+      <option value="Oswald">Oswald</option>
+      <option value="Anton">Anton</option>
+      <option value="Bangers">Bangers</option>
+      <option value="Creepster">Creepster</option>
+      <option value="Nosifer">Nosifer</option>
+      <option value="Special Elite">Special Elite</option>
+      <option value="Permanent Marker">Permanent Marker</option>
+      <option value="Exo 2">Exo 2</option>
+      <option value="Cuprum">Cuprum</option>
+      <option value="PT Sans Caption">PT Sans Caption</option>
+      <option value="Ruslan Display">Ruslan Display</option>
+      <option value="Cormorant Garamond">Cormorant Garamond</option>
+    </select>
+    <label>Dydis (px)</label><input type="range" id="d2" min="35" max="160" value="65">
+    <label><input type="checkbox" id="apv2" checked> Apvadas</label>
+    <label>Apvado spalva</label><input type="color" id="apvc2" value="#ffffff">
+    <label>Apvado storis</label><input type="range" id="apvw2" min="0" max="12" step="0.5" value="4">
+    <label><input type="checkbox" id="sh2" checked> Šešėlis</label>
+    <label>Šešėlio spalva</label><input type="color" id="shc2" value="#800000">
+    <label>Šešėlio blur (px)</label><input type="range" id="shblur2" min="0" max="30" value="6">
+    <label>Šešėlio poslinkis (px)</label><input type="range" id="shoff2" min="-30" max="30" value="4">
+
+    <hr>
+
+    <label><input type="checkbox" id="autobg2" checked> Automatinis fonas po tekstu</label>
+    <label>Fono spalva</label><input type="color" id="autobgcol2" value="#1a1a1a">
+    <label>Fono permatamumas (%)</label><input type="range" id="bgop2" min="0" max="100" value="100">
+    <label>Fono išsikišimas (px)</label><input type="range" id="bgpad2" min="0" max="60" value="12">
+    <label>Fono užapvalinimas (px)</label><input type="range" id="bgrad2" min="0" max="50" value="6">
+
+    <hr>
+
+    <label><input type="checkbox" id="lin2_on" checked> Linija</label>
+    <label>Linijos spalva</label><input type="color" id="lin2_c" value="#00ccff">
+    <label>Linijos ilgis (%)</label><input type="range" id="lin2_w" min="20" max="120" value="80">
+    <label>Linijos storis (px)</label><input type="range" id="lin2_h" min="5" max="150" value="18">
+  </div>
+
+  <hr>
+
+  <!-- 3 tekstas -->
+  <div>
+    <h4><label><input type="checkbox" id="show3" checked> 3 tekstas</label></h4>
+    <input type="text" id="t3" value="TREČIA EILUTĖ" placeholder="TREČIA EILUTĖ">
+    <label>Spalva</label><input type="color" id="c3" value="#065B10">
+    <label>Permatamumas (%)</label><input type="range" id="txtalpha3" min="0" max="100" value="100">
+    <label>Šriftas</label>
+    <select id="f3">
+      <option value="Impact">Impact</option>
+      <option value="Arial Black">Arial Black</option>
+      <option value="Bebas Neue">Bebas Neue</option>
+      <option value="Oswald">Oswald</option>
+      <option value="Anton">Anton</option>
+      <option value="Bangers">Bangers</option>
+      <option value="Creepster">Creepster</option>
+      <option value="Nosifer">Nosifer</option>
+      <option value="Special Elite">Special Elite</option>
+      <option value="Permanent Marker">Permanent Marker</option>
+      <option value="Exo 2">Exo 2</option>
+      <option value="Cuprum">Cuprum</option>
+      <option value="PT Sans Caption">PT Sans Caption</option>
+      <option value="Ruslan Display">Ruslan Display</option>
+      <option value="Cormorant Garamond">Cormorant Garamond</option>
+    </select>
+    <label>Dydis (px)</label><input type="range" id="d3" min="28" max="140" value="50">
+    <label><input type="checkbox" id="apv3" checked> Apvadas</label>
+    <label>Apvado spalva</label><input type="color" id="apvc3" value="#ffffff">
+    <label>Apvado storis</label><input type="range" id="apvw3" min="0" max="12" step="0.5" value="3">
+    <label><input type="checkbox" id="sh3" checked> Šešėlis</label>
+    <label>Šešėlio spalva</label><input type="color" id="shc3" value="#800000">
+    <label>Šešėlio blur (px)</label><input type="range" id="shblur3" min="0" max="30" value="4">
+    <label>Šešėlio poslinkis (px)</label><input type="range" id="shoff3" min="-30" max="30" value="3">
+
+    <hr>
+
+    <label><input type="checkbox" id="autobg3" checked> Automatinis fonas po tekstu</label>
+    <label>Fono spalva</label><input type="color" id="autobgcol3" value="#1a1a1a">
+    <label>Fono permatamumas (%)</label><input type="range" id="bgop3" min="0" max="100" value="100">
+    <label>Fono išsikišimas (px)</label><input type="range" id="bgpad3" min="0" max="60" value="12">
+    <label>Fono užapvalinimas (px)</label><input type="range" id="bgrad3" min="0" max="50" value="6">
+
+    <hr>
+
+    <label><input type="checkbox" id="lin3_on" checked> Linija</label>
+    <label>Linijos spalva</label><input type="color" id="lin3_c" value="#ffffff">
+    <label>Linijos ilgis (%)</label><input type="range" id="lin3_w" min="20" max="120" value="70">
+    <label>Linijos storis (px)</label><input type="range" id="lin3_h" min="5" max="150" value="15">
+  </div>
+
+  <button id="download">Atsisiųsti PNG</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+// Fondo įkėlimas
+document.getElementById('fonas').onchange = e => {
+  const file = e.target.files[0];
+  if (file) document.getElementById('canvas').style.background = `url(${URL.createObjectURL(file)}) center/cover`;
+};
+
+// Drag logika
+let dragged = null, offsetX = 0, offsetY = 0;
+
+document.addEventListener('mousedown', e => {
+  const t = e.target.closest('.tekstas, .linija');
+  if (!t) return;
+  dragged = t;
+  const r = t.getBoundingClientRect();
+  offsetX = e.clientX - r.left;
+  offsetY = e.clientY - r.top;
+  t.style.zIndex = (parseInt(t.style.zIndex || 0) + 10);
+  e.preventDefault();
+});
+
+document.addEventListener('mousemove', e => {
+  if (!dragged) return;
+  const cr = document.getElementById('canvas').getBoundingClientRect();
+  dragged.style.left = (e.clientX - cr.left - offsetX) + 'px';
+  dragged.style.top = (e.clientY - cr.top - offsetY) + 'px';
+});
+
+document.addEventListener('mouseup', () => dragged = null);
+
+// Elementų saugojimas
+const els = {};
+
+function getText(n) {
+  if (els[`t${n}`]) return els[`t${n}`];
+  const div = document.createElement('div');
+  div.className = 'tekstas';
+  div.style.left = (80 + (n-1)*100) + 'px';
+  div.style.top = (140 + (n-1)*180) + 'px';
+  div.style.zIndex = 30;
+  document.getElementById('canvas').appendChild(div);
+  els[`t${n}`] = div;
+  return div;
+}
+
+function getAutoBg(n) {
+  const key = `bg${n}`;
+  if (els[key]) return els[key];
+  const bg = document.createElement('div');
+  bg.className = 'teksto-fonas';
+  bg.style.zIndex = 25;
+  document.getElementById('canvas').appendChild(bg);
+  els[key] = bg;
+  return bg;
+}
+
+function getLine(n) {
+  if (els[`l${n}`]) return els[`l${n}`];
+  const line = document.createElement('div');
+  line.className = 'linija';
+  line.style.left = (80 + (n-1)*100) + 'px';
+  line.style.top = (220 + (n-1)*180) + 'px';
+  line.style.zIndex = 20;
+  document.getElementById('canvas').appendChild(line);
+  els[`l${n}`] = line;
+  return line;
+}
+
+function hexToRgba(hex, alpha = 1) {
+  hex = hex.replace('#', '');
+  const r = parseInt(hex.substring(0,2), 16);
+  const g = parseInt(hex.substring(2,4), 16);
+  const b = parseInt(hex.substring(4,6), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function update() {
+  [1,2,3].forEach(n => {
+    const show = document.getElementById(`show${n}`)?.checked ?? true;
+    const input = document.getElementById(`t${n}`);
+    const txt = getText(n);
+    const bgEl = getAutoBg(n);
+    const line = getLine(n);
+
+    if (!show) {
+      txt.style.display = 'none';
+      bgEl.style.display = 'none';
+      line.style.display = 'none';
+      return;
+    }
+
+    txt.style.display = 'block';
+    const val = input.value.trim();
+    txt.textContent = val || input.placeholder;
+
+    // Spalva + permatamumas per RGBA
+    const hex = document.getElementById(`c${n}`)?.value || '#fff';
+    const alpha = parseFloat(document.getElementById(`txtalpha${n}`)?.value || 100) / 100;
+    txt.style.color = hexToRgba(hex, alpha);
+
+    txt.style.fontFamily = document.getElementById(`f${n}`)?.value || 'Impact';
+    txt.style.fontSize = (document.getElementById(`d${n}`)?.value || 80) + 'px';
+
+    // Apvadas (text-shadow)
+    let sh = [];
+    if (document.getElementById(`apv${n}`)?.checked) {
+      const w = parseFloat(document.getElementById(`apvw${n}`)?.value || 4);
+      const col = document.getElementById(`apvc${n}`)?.value || '#fff';
+      for (let x = -w; x <= w; x += 1) {
+        for (let y = -w; y <= w; y += 1) {
+          if (x || y) sh.push(`${x}px ${y}px 0 ${col}`);
+        }
+      }
+    }
+    if (document.getElementById(`sh${n}`)?.checked) {
+      const blur = parseFloat(document.getElementById(`shblur${n}`)?.value || 8);
+      const col = document.getElementById(`shc${n}`)?.value || '#000';
+      const off = parseFloat(document.getElementById(`shoff${n}`)?.value || 4);
+      sh.push(`${off}px ${off}px ${blur}px ${col}`);
+    }
+    txt.style.textShadow = sh.join(', ') || 'none';
+
+    // Automatinis fonas
+    const bgOn = document.getElementById(`autobg${n}`)?.checked ?? false;
+    if (bgOn) {
+      const tr = txt.getBoundingClientRect();
+      const cr = document.getElementById('canvas').getBoundingClientRect();
+      const pad = parseFloat(document.getElementById(`bgpad${n}`)?.value || 12);
+      const rad = parseFloat(document.getElementById(`bgrad${n}`)?.value || 6);
+      const bgAlpha = parseFloat(document.getElementById(`bgop${n}`)?.value || 100) / 100;
+
+      bgEl.style.left = (tr.left - cr.left - pad) + 'px';
+      bgEl.style.top = (tr.top - cr.top - pad) + 'px';
+      bgEl.style.width = (tr.width + pad*2) + 'px';
+      bgEl.style.height = (tr.height + pad*2) + 'px';
+      bgEl.style.background = document.getElementById(`autobgcol${n}`)?.value || '#1a1a1a';
+      bgEl.style.opacity = bgAlpha;
+      bgEl.style.borderRadius = rad + 'px';
+      bgEl.style.display = 'block';
+    } else {
+      bgEl.style.display = 'none';
+    }
+
+    // Linija
+    const lineOn = document.getElementById(`lin${n}_on`)?.checked ?? false;
+    if (lineOn) {
+      line.style.background = document.getElementById(`lin${n}_c`)?.value || '#fff';
+      line.style.width = (document.getElementById(`lin${n}_w`)?.value || 90) + '%';
+      line.style.height = (document.getElementById(`lin${n}_h`)?.value || 20) + 'px';
+      line.style.display = 'block';
+    } else {
+      line.style.display = 'none';
+    }
+  });
+}
+
+document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', update));
+update();
+
+// Atsisiuntimas
+document.getElementById('download').onclick = async () => {
+  const btn = document.getElementById('download');
+  btn.disabled = true;
+  btn.textContent = 'Laukite...';
+
+  try {
+    const dataUrl = await html2canvas(document.getElementById('canvas'), {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: null,
+      logging: false
+    }).then(c => c.toDataURL('image/png'));
+
+    const a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = 'virselis.png';
+    a.click();
+  } catch (err) {
+    console.error(err);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Atsisiųsti PNG';
+  }
+};
+</script>
+</body>
+</html>
